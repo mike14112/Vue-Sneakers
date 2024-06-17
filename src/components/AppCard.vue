@@ -1,8 +1,7 @@
 <script setup></script>
 
 <template>
-    <div>
-<div class=" relative m-10 border  border-slate-100 rounded-3xl p-8 cursor-pointer transition hover:-translate-y-2 hover:shadow-xl">
+<div class=" relative m-10 border  bg-white border-slate-100 rounded-3xl p-8 cursor-pointer transition hover:-translate-y-2 hover:shadow-xl">
   <img src="/like-2.svg" alt="like 1" class="absolute top-0 left-8">
   <img src="/sneakers/sneakers-1.jpg" alt="Sneaker">
   <p class="mt-2">Мужские Кроссовки Nike Blazer Mid Suede</p>
@@ -13,6 +12,5 @@
       </div>
       <img src="/plus.svg" alt="Plus">
   </div>
-</div>
 </div>
 </template>
