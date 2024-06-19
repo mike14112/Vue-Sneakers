@@ -1,18 +1,32 @@
 <script setup>
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, watch } from 'vue';
 
 import AppHeader from './components/AppHeader.vue'
 import CardList from './components/CardList.vue';
 // import  AppBasket from './components/AppBasket.vue'
 
 const items = ref([])
+const sortBy = ref('')
+// const seachQuerry = ref('')
+
+const onChangeSortBy = event => {
+    sortBy.value = event.target.value
+    console.log(event.target.value)
+}
 
 onMounted(() => {
     const response = fetch('https://22388faf70970f30.mokky.dev/sneakers')
         .then(res => res.json(response))
         .then(data => items.value = data)
-
 })
+
+watch(sortBy, async () => {
+    const response = fetch('https://22388faf70970f30.mokky.dev/sneakers?sortBy=' + sortBy.value)
+        .then(res => res.json(response))
+        .then(data => items.value = data)
+    console.log(items)
+})
+
 
 </script>
 
@@ -26,10 +40,10 @@ onMounted(() => {
                 <h2 class="text-3xl  font-bold m-8"> Все Кроссовки</h2>
 
                 <div class="flex  gap-4">
-                    <select class="py-2 px3 border  border-rounded-md outline-none">
-                        <option value="">По названию </option>
-                        <option value="">По цене (Дешевые) </option>
-                        <option value="">По названию (Дорогие) </option>
+                    <select @change="onChangeSortBy" class="py-2 px3 border  border-rounded-md outline-none">
+                        <option value="name">По названию </option>
+                        <option value="price">По цене (Дешевые) </option>
+                        <option value="-price">По названию (Дорогие) </option>
 
                     </select>
                     <div class="relative">
