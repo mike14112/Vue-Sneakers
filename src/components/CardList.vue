@@ -1,24 +1,25 @@
 <script setup>
 import AppCard from './AppCard.vue';
-
-const onClickAdd =  ()  => {
+defineProps({
+  items: Array
+})
+const onClickAdd = () => {
   alert('added')
+
+
 }
+
 </script>
 <template>
 
 
 
   <div class="grid  grid-cols-4 gap-5 sm:grid-cols-2">
-<AppCard image-url="/sneakers/sneakers-1.jpg"
- title="Мужские Кроссовки Nike Blazer Mid Suede" 
- :price="12999" 
- :is-added="false" 
-  :is-favorite="false"
-  :on-click-add="onClickAdd"/>
+    <AppCard v-for="item in items " :key="item.id" :image-url="item.imageUrl" :class="item.title" :price="item.price"
+      :is-added="false" :is-favorite="false" :on-click-add="onClickAdd" />
 
 
 
-</div>
+  </div>
 
 </template>
