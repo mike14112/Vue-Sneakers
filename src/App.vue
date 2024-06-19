@@ -1,31 +1,48 @@
 <script setup>
-import { onMounted, ref, watch } from 'vue';
-
+import { onMounted, ref, reactive, watch, } from 'vue';
+import axios from 'axios';
 import AppHeader from './components/AppHeader.vue'
 import CardList from './components/CardList.vue';
 // import  AppBasket from './components/AppBasket.vue'
 
+const filters = reactive({
+    sortBy: 'title',
+    seachQuerry: ''
+})
 const items = ref([])
-const sortBy = ref('')
+// const seachQuerry = ref('')
 // const seachQuerry = ref('')
 
+const onChangeQuery = (event) => {
+    filters.seachQuerry = event.target.value
+}
+
 const onChangeSortBy = event => {
-    sortBy.value = event.target.value
+    filters.sortBy = event.target.value
     console.log(event.target.value)
 }
 
-onMounted(() => {
-    const response = fetch('https://22388faf70970f30.mokky.dev/sneakers')
-        .then(res => res.json(response))
-        .then(data => items.value = data)
-})
+const fetchItems = async () => {
+    try {
+        const params = {
+            sortBy: filters.sortBy
+        }
+        if (filters.seachQuerry) {
+            params.title = `*${filters.seachQuerry}*`
+        }
+        const { data } = await axios.get(`https://22388faf70970f30.mokky.dev/sneakers`,
+            {
+                params
+            }
+        )
+        items.value = data
+    } catch (err) {
+        console.log(err)
+    }
+}
 
-watch(sortBy, async () => {
-    const response = fetch('https://22388faf70970f30.mokky.dev/sneakers?sortBy=' + sortBy.value)
-        .then(res => res.json(response))
-        .then(data => items.value = data)
-    console.log(items)
-})
+onMounted(fetchItems)
+watch(filters, fetchItems)
 
 
 </script>
@@ -48,7 +65,7 @@ watch(sortBy, async () => {
                     </select>
                     <div class="relative">
                         <img src="/search.svg" alt="" class="absolute left-4 top-3">
-                        <input type="text" placeholder="Поиск"
+                        <input @change="onChangeQuery" type="text" placeholder="Поиск"
                             class="border border-gray-200 outline-none rounded-md py-2  pl-11 pr-4 focus:border-gray-400">
 
                     </div>
