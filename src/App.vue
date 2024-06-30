@@ -10,10 +10,12 @@ const filters = reactive({
   seachQuerry: ''
 })
 const items = ref([])
+const cartItems = ref([])
 const basketOpen = ref(false)
 
 const closeBasket = () => {
   basketOpen.value = false
+  console.log(basketOpen.value)
 }
 
 const openBasket = () => {
@@ -73,7 +75,16 @@ onMounted(async () => {
 })
 
 const addToCard = async (item) => {
-  console.log(item)
+  if (!item.isAdded) {
+    cartItems.value.push(item)
+    item.isAdded = true
+  } else {
+    cartItems.value.splice(
+      cartItems.value.indexOf(item), 1
+    )
+    item.isAdded = false
+  }
+  console.log(cartItems.value)
 }
 const addToFavorite = async (item) => {
   try {
@@ -99,9 +110,10 @@ const addToFavorite = async (item) => {
 watch(filters, fetchItems)
 
 
-provide('basketActions', {
+provide('cart', {
   closeBasket,
-  openBasket
+  openBasket,
+  cartItems
 })
 
 </script>
