@@ -1,15 +1,24 @@
 <script setup>
-import { onMounted, ref, reactive, watch } from 'vue'
+import { onMounted, ref, reactive, watch, provide } from 'vue'
 import axios from 'axios'
 import AppHeader from './components/AppHeader.vue'
 import CardList from './components/CardList.vue'
-// import  AppBasket from './components/AppBasket.vue'
+import AppBasket from './components/AppBasket.vue'
 
 const filters = reactive({
   sortBy: 'title',
   seachQuerry: ''
 })
 const items = ref([])
+const basketOpen = ref(false)
+
+const closeBasket = () => {
+  basketOpen.value = false
+}
+
+const openBasket = () => {
+  basketOpen.value = true
+}
 
 const fetchFavorites = async () => {
   try {
@@ -72,9 +81,8 @@ const addToFavorite = async (item) => {
       const obj = {
         parentId: item.id
       }
-      const { data } = await axios.post(`https://22388faf70970f30.mokky.dev/favorites`, obj)
-      console.log(data)
       item.isFavorite = true
+      const { data } = await axios.post(`https://22388faf70970f30.mokky.dev/favorites`, obj)
       item.favoriteId = data.id
     } else {
       await axios.delete((`https://22388faf70970f30.mokky.dev/favorites/${item.favoriteId}`))
@@ -91,12 +99,17 @@ const addToFavorite = async (item) => {
 watch(filters, fetchItems)
 
 
+provide('basketActions', {
+  closeBasket,
+  openBasket
+})
+
 </script>
 
 <template>
-  <!-- <AppBasket/> -->
+  <AppBasket v-if="basketOpen" />
   <div class="bg-white w-4/5 m-auto rounded-xl shadow-xl mt-14">
-    <AppHeader />
+    <AppHeader @basketOpen="openBasket" />
     <div class="p-10 w-full">
       <div class="flex justify-between items-center">
         <h2 class="text-3xl font-bold m-8">Все Кроссовки</h2>

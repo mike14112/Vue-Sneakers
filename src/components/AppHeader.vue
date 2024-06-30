@@ -1,4 +1,10 @@
-<script setup></script>
+<script setup>
+const emit = defineEmits(['basketOpen'])
+
+const basketOpen = () => {
+  emit('basketOpen')
+}
+</script>
 
 <template>
   <header class="flex justify-between items-center border-b border-slate-300 px-8 py-8">
@@ -12,7 +18,7 @@
 
     <nav>
       <ul class="flex items-center gap-10">
-        <li class="flex items-center gap-3 cursor-pointer text-gray-500 hover:text-black">
+        <li class="flex items-center gap-3 cursor-pointer text-gray-500 hover:text-black" @click="basketOpen">
           <img src="/cart.svg" alt="CART" />
           <b>1205 руб.</b>
         </li>
