@@ -2,6 +2,10 @@
 import CartListItem from './CartListItem.vue'
 import HeadBasket from './HeadBasket.vue'
 
+defineProps({
+  totalPrice: Number,
+  vatPrice: Number
+})
 </script>
 
 <template>
@@ -13,12 +17,12 @@ import HeadBasket from './HeadBasket.vue'
       <div class="flex gap-2">
         <span>Итого : </span>
         <div class="flex-1 border-b border-dashed border-black"></div>
-        <b>12990 руб.</b>
+        <b>{{ totalPrice }} руб.</b>
       </div>
       <div class="flex gap-2">
         <span>Налог 5% : </span>
         <div class="flex-1 border-b border-dashed border-black"></div>
-        <b>90 руб.</b>
+        <b>{{ vatPrice }} руб.</b>
       </div>
 
       <button disabled=""

@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, ref, reactive, watch, provide } from 'vue'
+import { onMounted, ref, reactive, watch, provide, computed } from 'vue'
 import axios from 'axios'
 import AppHeader from './components/AppHeader.vue'
 import CardList from './components/CardList.vue'
@@ -13,6 +13,10 @@ const items = ref([])
 const cartItems = ref([])
 const basketOpen = ref(false)
 
+const totalPrice = computed(
+  () => cartItems.value.reduce((acc, item) => acc += item.price, 0)
+)
+const vatPrice = computed(() => Math.round((totalPrice.value * 5) / 100))
 const closeBasket = () => {
   basketOpen.value = false
   console.log(basketOpen.value)
@@ -74,18 +78,26 @@ onMounted(async () => {
   await fetchFavorites()
 })
 
+const onClickRemoveCart = (item) => {
+  cartItems.value.splice(cartItems.value.indexOf(item), 1)
+  item.isAdded = false
+
+}
+
+const onClickAddCart = (item) => {
+  cartItems.value.push(item)
+  item.isAdded = true
+}
 const addToCard = async (item) => {
   if (!item.isAdded) {
-    cartItems.value.push(item)
-    item.isAdded = true
+    onClickAddCart(item)
   } else {
-    cartItems.value.splice(
-      cartItems.value.indexOf(item), 1
-    )
-    item.isAdded = false
+    onClickRemoveCart(item)
   }
-  console.log(cartItems.value)
 }
+
+
+
 const addToFavorite = async (item) => {
   try {
     if (!item.isFavorite) {
@@ -113,15 +125,16 @@ watch(filters, fetchItems)
 provide('cart', {
   closeBasket,
   openBasket,
-  cartItems
+  cartItems,
+  onClickRemoveCart
 })
 
 </script>
 
 <template>
-  <AppBasket v-if="basketOpen" />
+  <AppBasket v-if="basketOpen" :totalPrice="totalPrice" :vat-price="vatPrice" />
   <div class="bg-white w-4/5 m-auto rounded-xl shadow-xl mt-14">
-    <AppHeader @basketOpen="openBasket" />
+    <AppHeader @basketOpen="openBasket" :totalPrice="totalPrice" />
     <div class="p-10 w-full">
       <div class="flex justify-between items-center">
         <h2 class="text-3xl font-bold m-8">Все Кроссовки</h2>
