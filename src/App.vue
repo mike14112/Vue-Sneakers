@@ -103,10 +103,12 @@ onMounted(async () => {
   cartItems.value = localCart ? JSON.parse(localCart) : []
   await fetchItems()
   await fetchFavorites()
+
   items.value = items.value.map((item) => ({
-    ...items,
+    ...item,
     isAdded: cartItems.value.some((cartItem) => cartItem.id === item.id)
   }))
+  console.log(items.value)
 })
 
 const onClickRemoveCart = (item) => {
