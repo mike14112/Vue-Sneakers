@@ -12,11 +12,21 @@ const filters = reactive({
 const items = ref([])
 const cartItems = ref([])
 const basketOpen = ref(false)
+const isCreatingOrder = ref(false)
+
+
 
 const totalPrice = computed(
   () => cartItems.value.reduce((acc, item) => acc += item.price, 0)
 )
 const vatPrice = computed(() => Math.round((totalPrice.value * 5) / 100))
+
+const cartIsEmpty = computed(() => cartItems.value.length === 0);
+
+
+const cartButtonDisabled = computed(() => isCreatingOrder.value || cartIsEmpty.value)
+
+
 const closeBasket = () => {
   basketOpen.value = false
   console.log(basketOpen.value)
@@ -26,6 +36,22 @@ const openBasket = () => {
   basketOpen.value = true
 }
 
+const createOrder = async () => {
+  try {
+    isCreatingOrder.value = true
+    const { data } = await axios.post(`https://22388faf70970f30.mokky.dev/orders`, {
+      items: cartItems.value,
+      totalPrice: totalPrice.value
+    })
+    cartItems.value = [];
+
+    return data
+  } catch (error) {
+    console.log(error)
+  } finally {
+    isCreatingOrder.value = false
+  }
+}
 const fetchFavorites = async () => {
   try {
     const { data: favorites } = await axios.get(`https://22388faf70970f30.mokky.dev/favorites`)
@@ -49,7 +75,6 @@ console.log(filters.seachQuerry)
 
 const onChangeSortBy = (event) => {
   filters.sortBy = event.target.value
-  console.log(event.target.value)
 }
 
 const fetchItems = async () => {
@@ -74,6 +99,8 @@ const fetchItems = async () => {
 }
 
 onMounted(async () => {
+  const localCart = localStorage.getItem('cart')
+  cartItems.value = localCart ? JSON.parse(localCart) : []
   await fetchItems()
   await fetchFavorites()
 })
@@ -121,6 +148,20 @@ const addToFavorite = async (item) => {
 
 watch(filters, fetchItems)
 
+watch(cartItems, () => {
+  items.value = items.value.map((item) => ({
+    ...item,
+    isAdded: false
+  }))
+})
+
+watch(
+  cartItems,
+  () => {
+    localStorage.setItem('cart', JSON.stringify(cartItems.value))
+  },
+  { deep: true }
+)
 
 provide('cart', {
   closeBasket,
@@ -132,7 +173,8 @@ provide('cart', {
 </script>
 
 <template>
-  <AppBasket v-if="basketOpen" :totalPrice="totalPrice" :vat-price="vatPrice" />
+  <AppBasket v-if="basketOpen" :totalPrice="totalPrice" :vat-price="vatPrice" @createOrder="createOrder"
+    :cartButtonDisabled="cartButtonDisabled" />
   <div class="bg-white w-4/5 m-auto rounded-xl shadow-xl mt-14">
     <AppHeader @basketOpen="openBasket" :totalPrice="totalPrice" />
     <div class="p-10 w-full">
