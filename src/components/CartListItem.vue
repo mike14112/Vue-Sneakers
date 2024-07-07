@@ -8,7 +8,7 @@ const { cartItems, onClickRemoveCart } = inject('cart')
 <template>
   <div class="flex flex-1 flex-col">
     <CartItem v-for="item in cartItems" :key="item.id" :image-url="item.imageUrl" :title="item.title"
-      :price="item.price" @onClickRemoveCart="() => onClickRemoveCart(item)"> </CartItem>
+      :price="item.price" @onClickRemoveCart=" isFavorite ? null : () => onClickRemoveCart(item)"> </CartItem>
   </div>
 </template>
 

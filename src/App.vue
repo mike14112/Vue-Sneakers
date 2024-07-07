@@ -3,7 +3,6 @@ import { ref, watch, provide, computed } from 'vue'
 import axios from 'axios'
 import AppHeader from './components/AppHeader.vue'
 import AppBasket from './components/AppBasket.vue'
-import AppHome from './pages/AppHome.vue'
 
 
 const cartItems = ref([])
@@ -86,9 +85,8 @@ provide('cart', {
   <div class="bg-white w-4/5 m-auto rounded-xl shadow-xl mt-14">
     <AppHeader @basketOpen="openBasket" :totalPrice="totalPrice" />
     <div class="p-10 w-full">
-      <AppHome />
+      <router-view></router-view>
     </div>
-
   </div>
 </template>
 
